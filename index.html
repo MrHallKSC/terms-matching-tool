@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Terms Matching Activity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .topic-selector {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .topic-selector label {
+            font-weight: bold;
+            color: #444;
+            margin-right: 10px;
+        }
+
+        .topic-selector select {
+            padding: 8px 15px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            background: white;
+            min-width: 250px;
+        }
+
+        .file-upload {
+            display: inline-block;
+            margin-left: 15px;
+        }
+
+        .file-upload input[type="file"] {
+            padding: 5px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .current-topic {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .matching-area {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 40px;
+            min-height: 400px;
+            transition: min-height 0.5s ease;
+        }
+
+        .column {
+            flex: 1;
+        }
+
+        .column-title {
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .draggable {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .draggable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .draggable.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .draggable.drag-over {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px dashed #667eea;
+            transform: scale(1.02);
+        }
+
+        .draggable.correct {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+            animation: correctPulse 0.5s ease;
+        }
+
+        .draggable.incorrect {
+            border-color: #f44336;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .matched-pairs {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 100px;
+        }
+
+        .matched-pairs h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .pair {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pair .term {
+            font-weight: bold;
+            min-width: 150px;
+            color: #2c3e50;
+        }
+
+        .pair .definition {
+            color: #555;
+            padding-left: 20px;
+        }
+
+        .copy-button {
+            display: none;
+            margin: 20px auto;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .copy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .copy-button.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: #4CAF50;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: celebrate 1s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .drop-zone {
+            min-height: 50px;
+            transition: all 0.5s ease;
+        }
+
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Key Terms Matching Activity</h1>
+        
+        <div class="topic-selector">
+            <label for="topicSelect">Choose Topic:</label>
+            <select id="topicSelect" onchange="loadTopic()">
+                <option value="default">Built-in Example</option>
+            </select>
+            <div class="file-upload">
+                <input type="file" id="csvFile" accept=".csv" onchange="handleFileUpload(event)">
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="current-topic" id="currentTopic">Current Topic: Built-in Example</div>
+        
+        <p class="instructions">Drag each key term to its matching definition. Be careful - one wrong match will reset all your progress!</p>
+        
+        <div class="matching-area">
+            <div class="column">
+                <div class="column-title">Key Terms</div>
+                <div id="terms" class="drop-zone"></div>
+            </div>
+            <div class="column">
+                <div class="column-title">Definitions</div>
+                <div id="definitions" class="drop-zone"></div>
+            </div>
+        </div>
+
+        <div class="matched-pairs">
+            <h2>Matched Pairs</h2>
+            <div id="matched-list"></div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            🎉 Congratulations! All terms matched correctly! 🎉
+        </div>
+
+        <button class="copy-button" id="copyButton" onclick="copyDefinitions()">
+            📋 Copy All Definitions
+        </button>
+    </div>
+
+    <script>
+        // Default built-in terms
+        const defaultTermPairs = [
+            { term: "Photosynthesis", definition: "The process by which plants use sunlight to synthesize foods from carbon dioxide and water" },
+            { term: "Mitosis", definition: "A type of cell division that results in two daughter cells each having the same number of chromosomes as the parent" },
+            { term: "Ecosystem", definition: "A biological community of interacting organisms and their physical environment" },
+            { term: "Gravity", definition: "A force that attracts a body towards the centre of the earth, or towards any other physical body having mass" },
+            { term: "Democracy", definition: "A system of government by the whole population, typically through elected representatives" },
+            { term: "Metaphor", definition: "A figure of speech that describes an object or action in a way that isn't literally true" }
+        ];
+
+        // Store all loaded topics
+        let allTopics = {
+            'default': {
+                subject: 'Built-in',
+                topic: 'Example',
+                pairs: defaultTermPairs
+            }
+        };
+
+        let currentTermPairs = defaultTermPairs;
+        let matchedPairs = [];
+        let draggedElement = null;
+        let draggedType = null;
+
+        /* ============================================
+           CONFIGURE YOUR CSV FILES HERE
+           ============================================
+           Add your OneDrive/Google Drive/Dropbox CSV file links below.
+           
+           For OneDrive:
+           1. Upload your CSV file to OneDrive
+           2. Right-click the file and select "Embed"
+           3. Click "Generate HTML"
+           4. Look for the download URL in the code (ends with download.aspx)
+           5. Add that URL to the list below
+           
+           For Google Drive:
+           1. Upload your CSV to Google Drive
+           2. Right-click and select "Get link"
+           3. Change to "Anyone with the link can view"
+           4. Replace "file/d/" with "uc?export=download&id=" in the URL
+           
+           Example formats:
+           - Local file: 'biology.csv'
+           - OneDrive: 'https://onedrive.live.com/download?resid=...'
+           - Google Drive: 'https://drive.google.com/uc?export=download&id=FILE_ID'
+        */
+        
+        // GITHUB CONFIGURATION
+        // Replace these with your actual GitHub username and repository name
+        const GITHUB_USERNAME = 'YOUR_USERNAME';  // <-- Change this
+        const GITHUB_REPO = 'classroom-matching-tool';  // <-- Change this if different
+        
+        // List all your CSV files here
+        const csvFiles = [
+            'biology.csv',
+            'chemistry.csv',
+            // Add more CSV filenames here as you create them:
+            // 'physics.csv',
+            // 'history.csv',
+            // 'geography.csv',
+        ];
+
+        // Try to load CSV files from GitHub or locally
+        function checkForCSVFiles() {
+            csvFiles.forEach((filename, index) => {
+                // First try local file (for local testing)
+                fetch(filename)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.text();
+                        }
+                        // If local fails, try GitHub
+                        const githubUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${filename}`;
+                        return fetch(githubUrl).then(r => {
+                            if (r.ok) return r.text();
+                            throw new Error('File not found');
+                        });
+                    })
+                    .then(csvText => {
+                        parseAndAddCSV(csvText, filename);
+                    })
+                    .catch(err => {
+                        console.log(`Could not load ${filename}:`, err);
+                    });
+            });
+        }
+
+        function parseAndAddCSV(csvText, filename) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return;
+
+            const header = lines[0].split(',').map(item => item.trim());
+            if (header.length < 2) return;
+
+            const subject = header[0];
+            const topic = header[1];
+            const pairs = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const parts = lines[i].split(',').map(item => item.trim());
+                if (parts.length >= 2 && parts[0] && parts[1]) {
+                    pairs.push({
+                        term: parts[0],
+                        definition: parts[1]
+                    });
+                }
+            }
+
+            if (pairs.length > 0) {
+                const key = `${subject}_${topic}`;
+                allTopics[key] = {
+                    subject: subject,
+                    topic: topic,
+                    pairs: pairs
+                };
+                updateTopicDropdown();
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    parseAndAddCSV(e.target.result, file.name);
+                    showError(''); // Clear any errors
+                } catch (err) {
+                    showError('Error parsing CSV file. Please check the format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            if (message) {
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+            } else {
+                errorDiv.classList.remove('show');
+            }
+        }
+
+        function updateTopicDropdown() {
+            const select = document.getElementById('topicSelect');
+            select.innerHTML = '';
+            
+            Object.keys(allTopics).forEach(key => {
+                const topic = allTopics[key];
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = key === 'default' ? 
+                    'Built-in Example' : 
+                    `${topic.subject} - ${topic.topic}`;
+                select.appendChild(option);
+            });
+        }
+
+        function loadTopic() {
+            const select = document.getElementById('topicSelect');
+            const selectedKey = select.value;
+            const topic = allTopics[selectedKey];
+            
+            if (topic) {
+                currentTermPairs = topic.pairs;
+                document.getElementById('currentTopic').textContent = 
+                    selectedKey === 'default' ? 
+                    'Current Topic: Built-in Example' : 
+                    `Current Topic: ${topic.subject} - ${topic.topic}`;
+                initializeGame();
+            }
+        }
+
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function initializeGame() {
+            matchedPairs = [];
+            document.getElementById('matched-list').innerHTML = '';
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('copyButton').classList.remove('show');
+            
+            // Reset matching area height
+            const matchingArea = document.querySelector('.matching-area');
+            matchingArea.style.minHeight = '400px';
+
+            const termsContainer = document.getElementById('terms');
+            const definitionsContainer = document.getElementById('definitions');
+            
+            termsContainer.innerHTML = '';
+            definitionsContainer.innerHTML = '';
+
+            const shuffledTerms = shuffle(currentTermPairs);
+            const shuffledDefinitions = shuffle(currentTermPairs);
+
+            shuffledTerms.forEach((pair, index) => {
+                const termDiv = document.createElement('div');
+                termDiv.className = 'draggable';
+                termDiv.draggable = true;
+                termDiv.textContent = pair.term;
+                termDiv.dataset.term = pair.term;
+                termDiv.dataset.type = 'term';
+                termsContainer.appendChild(termDiv);
+            });
+
+            shuffledDefinitions.forEach((pair, index) => {
+                const defDiv = document.createElement('div');
+                defDiv.className = 'draggable';
+                defDiv.draggable = true;
+                defDiv.textContent = pair.definition;
+                defDiv.dataset.definition = pair.definition;
+                defDiv.dataset.type = 'definition';
+                definitionsContainer.appendChild(defDiv);
+            });
+
+            addDragListeners();
+        }
+
+        function addDragListeners() {
+            const draggables = document.querySelectorAll('.draggable');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', handleDragStart);
+                draggable.addEventListener('dragend', handleDragEnd);
+                draggable.addEventListener('dragenter', handleDragEnter);
+                draggable.addEventListener('dragover', handleDragOver);
+                draggable.addEventListener('dragleave', handleDragLeave);
+                draggable.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            draggedType = e.target.dataset.type;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            // Remove all drag-over classes
+            document.querySelectorAll('.draggable').forEach(elem => {
+                elem.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('draggable') && e.target !== draggedElement) {
+                const targetType = e.target.dataset.type;
+                // Only show hover effect on opposite type
+                if (targetType !== draggedType) {
+                    e.target.classList.add('drag-over');
+                }
+            }
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('draggable')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+
+            const droppedOn = e.target;
+            
+            // Clear all drag-over states
+            document.querySelectorAll('.draggable').forEach(elem => {
+                elem.classList.remove('drag-over');
+            });
+            
+            if (!droppedOn.classList.contains('draggable') || droppedOn === draggedElement) {
+                return false;
+            }
+
+            const droppedType = droppedOn.dataset.type;
+            
+            // Don't allow dropping on same type
+            if (draggedType === droppedType) {
+                return false;
+            }
+
+            let term, definition;
+            if (draggedType === 'term') {
+                term = draggedElement.dataset.term;
+                definition = droppedOn.dataset.definition;
+            } else {
+                term = droppedOn.dataset.term;
+                definition = draggedElement.dataset.definition;
+            }
+
+            checkMatch(term, definition, draggedElement, droppedOn);
+            return false;
+        }
+
+        function checkMatch(term, definition, elem1, elem2) {
+            const isCorrect = currentTermPairs.some(pair => 
+                pair.term === term && pair.definition === definition
+            );
+
+            if (isCorrect) {
+                elem1.classList.add('correct');
+                elem2.classList.add('correct');
+                
+                setTimeout(() => {
+                    elem1.remove();
+                    elem2.remove();
+                    addMatchedPair(term, definition);
+                    adjustMatchingAreaHeight();
+                    
+                    if (matchedPairs.length === currentTermPairs.length) {
+                        showSuccess();
+                        // Collapse matching area when complete
+                        const matchingArea = document.querySelector('.matching-area');
+                        matchingArea.style.minHeight = '80px';
+                    }
+                }, 500);
+            } else {
+                elem1.classList.add('incorrect');
+                elem2.classList.add('incorrect');
+                
+                setTimeout(() => {
+                    elem1.classList.remove('incorrect');
+                    elem2.classList.remove('incorrect');
+                    resetGame();
+                }, 1000);
+            }
+        }
+
+        function adjustMatchingAreaHeight() {
+            const matchingArea = document.querySelector('.matching-area');
+            const remainingItems = document.querySelectorAll('.draggable').length;
+            
+            if (remainingItems === 0) {
+                // If no items left, collapse to minimal height
+                matchingArea.style.minHeight = '80px';
+            } else {
+                // Calculate height based on remaining items
+                // Each row of items needs about 70px
+                const rowsNeeded = Math.ceil(remainingItems / 2); // Divided by 2 for two columns
+                const newHeight = Math.max(150, (rowsNeeded * 70) + 100); // 100px for headers and padding
+                matchingArea.style.minHeight = newHeight + 'px';
+            }
+        }
+
+        function addMatchedPair(term, definition) {
+            matchedPairs.push({ term, definition });
+            const matchedList = document.getElementById('matched-list');
+            
+            const pairDiv = document.createElement('div');
+            pairDiv.className = 'pair';
+            pairDiv.innerHTML = `
+                <span class="term">${term}:</span>
+                <span class="definition">${definition}</span>
+            `;
+            matchedList.appendChild(pairDiv);
+        }
+
+        function resetGame() {
+            alert('Wrong match! Starting over...');
+            initializeGame();
+        }
+
+        function showSuccess() {
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('copyButton').classList.add('show');
+        }
+
+        function copyDefinitions() {
+            const text = matchedPairs.map(pair => 
+                `${pair.term}: ${pair.definition}`
+            ).join('\n');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const button = document.getElementById('copyButton');
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                }, 2000);
+            }).catch(err => {
+                alert('Could not copy text. Please try again.');
+            });
+        }
+
+        // Initialize the game when the page loads
+        initializeGame();
+        // Check for CSV files in directory
+        checkForCSVFiles();
+    </script>
+</body>
+</html>

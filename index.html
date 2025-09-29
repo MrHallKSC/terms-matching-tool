@@ -651,38 +651,63 @@
             loadTopicsForSpecification(spec);
         }
 
-        function loadTopicsForSpecification(spec) {
-            const grid = document.getElementById('topicGrid');
-            grid.innerHTML = '';
-            
-            spec.topics.forEach(filename => {
-                // Load each CSV to get topic details
-                const url = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${spec.code}/${filename}`;
-                
-                fetch(url)
-                    .then(response => response.text())
-                    .then(csvText => {
-                        const lines = csvText.trim().split('\n');
-                        if (lines.length >= 2) {
-                            // Parse topic info from second line
-                            const topicInfo = lines[1].split(',').map(s => s.trim());
-                            if (topicInfo.length >= 2) {
-                                const item = document.createElement('div');
-                                item.className = 'selection-item';
-                                item.onclick = () => selectTopic(filename, csvText);
-                                item.innerHTML = `
-                                    <div class="code">${topicInfo[0]}</div>
-                                    <div class="description">${topicInfo[1]}</div>
-                                `;
-                                grid.appendChild(item);
-                            }
-                        }
-                    })
-                    .catch(err => {
-                        console.log(`Could not load ${filename}:`, err);
-                    });
-            });
+        function cleanPathSegment(s) {
+  return String(s)
+    .trim()
+    .replace(/^['"]+|['"]+$/g, '')   // strip leading/trailing quotes
+    .replace(/^\/+|\/+$/g, '');      // strip leading/trailing slashes
+}
+
+function loadTopicsForSpecification(spec) {
+  const grid = document.getElementById('topicGrid');
+  grid.innerHTML = '';
+
+  const code = cleanPathSegment(spec.code);
+
+  spec.topics.forEach(rawFilename => {
+    const filename = cleanPathSegment(rawFilename);
+
+    const url = [
+      'https://raw.githubusercontent.com',
+      encodeURIComponent(GITHUB_USERNAME),
+      encodeURIComponent(GITHUB_REPO),
+      'main',
+      encodeURIComponent(code),
+      encodeURIComponent(filename)
+    ].join('/');
+
+    fetch(url)
+      .then(r => {
+        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+        return r.text();
+      })
+      .then(csvText => {
+        const lines = csvText.trim().split('\n');
+        if (lines.length >= 2) {
+          // Safer split for 2nd line (handles a comma inside quotes)
+          const topicInfo = [];
+          lines[1].replace(/("([^"]|"")*"|[^,]+)/g, m => {
+            topicInfo.push(m.replace(/^"(.*)"$/, '$1').replace(/""/g, '"').trim());
+            return m;
+          });
+
+          if (topicInfo.length >= 2) {
+            const item = document.createElement('div');
+            item.className = 'selection-item';
+            item.onclick = () => selectTopic(filename, csvText);
+            item.innerHTML = `
+              <div class="code">${topicInfo[0]}</div>
+              <div class="description">${topicInfo[1]}</div>
+            `;
+            grid.appendChild(item);
+          }
         }
+      })
+      .catch(err => {
+        console.log(`Could not load ${filename}:`, err);
+      });
+  });
+}
 
         function selectTopic(filename, csvText) {
             currentTopic = { filename, csvText };

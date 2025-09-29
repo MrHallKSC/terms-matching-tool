@@ -274,6 +274,73 @@
         .error-message.show {
             display: block;
         }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .popup-overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-message {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            animation: popupSlide 0.3s ease;
+        }
+
+        @keyframes popupSlide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .popup-message h3 {
+            color: #f44336;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .popup-message p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .popup-button {
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .popup-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -319,6 +386,15 @@
         <button class="copy-button" id="copyButton" onclick="copyDefinitions()">
             📋 Copy All Definitions
         </button>
+    </div>
+
+    <!-- Popup for wrong match -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-message">
+            <h3>❌ Incorrect Match!</h3>
+            <p>That wasn't quite right. Let's start over and try again!</p>
+            <button class="popup-button" onclick="closePopup()">OK, Let's Try Again</button>
+        </div>
     </div>
 
     <script>
@@ -378,7 +454,7 @@
         // List all your CSV files here
         const csvFiles = [
             'CPU_FDE_terms.csv',
-            'biology.csv',
+            'chemistry.csv',
             // Add more CSV filenames here as you create them:
             // 'physics.csv',
             // 'history.csv',
@@ -702,7 +778,12 @@
         }
 
         function resetGame() {
-            alert('Wrong match! Starting over...');
+            // Show popup instead of alert
+            document.getElementById('popupOverlay').classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('show');
             initializeGame();
         }
 

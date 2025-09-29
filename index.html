@@ -691,7 +691,8 @@ function loadTopicsForSpecification(spec) {
 
   const code = cleanPathSegment(spec.code);
 
-  spec.topics.forEach(rawFilename => {
+  // Create array of promises with index to preserve order
+  const loadPromises = spec.topics.map((rawFilename, index) => {
     const filename = cleanPathSegment(rawFilename);
 
     const url = [
@@ -703,7 +704,7 @@ function loadTopicsForSpecification(spec) {
       encodeURIComponent(filename)
     ].join('/');
 
-    fetch(url)
+    return fetch(url)
       .then(r => {
         if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
         return r.text();
@@ -715,20 +716,40 @@ function loadTopicsForSpecification(spec) {
           const topicInfo = parseCSVLine(lines[1]);
 
           if (topicInfo.length >= 2) {
-            const item = document.createElement('div');
-            item.className = 'selection-item';
-            item.onclick = () => selectTopic(filename, csvText);
-            item.innerHTML = `
-              <div class="code">${topicInfo[0]}</div>
-              <div class="description">${topicInfo[1]}</div>
-            `;
-            grid.appendChild(item);
+            return {
+              index,
+              filename,
+              csvText,
+              topicInfo
+            };
           }
         }
+        return null;
       })
       .catch(err => {
         console.log(`Could not load ${filename}:`, err);
+        return null;
       });
+  });
+
+  // Wait for all to load, then add in order
+  Promise.all(loadPromises).then(results => {
+    // Filter out null results and sort by original index
+    const validResults = results
+      .filter(result => result !== null)
+      .sort((a, b) => a.index - b.index);
+
+    // Add items to grid in correct order
+    validResults.forEach(result => {
+      const item = document.createElement('div');
+      item.className = 'selection-item';
+      item.onclick = () => selectTopic(result.filename, result.csvText);
+      item.innerHTML = `
+        <div class="code">${result.topicInfo[0]}</div>
+        <div class="description">${result.topicInfo[1]}</div>
+      `;
+      grid.appendChild(item);
+    });
   });
 }
 

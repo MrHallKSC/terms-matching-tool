@@ -34,41 +34,37 @@
             font-size: 2em;
         }
 
-        .topic-selector {
-            text-align: center;
-            margin-bottom: 20px;
+        .topic-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
+            margin-bottom: 20px;
         }
 
-        .topic-selector label {
+        .current-selection {
+            color: #667eea;
             font-weight: bold;
-            color: #444;
-            margin-right: 10px;
+            font-size: 1.1em;
         }
 
-        .topic-selector select {
-            padding: 8px 15px;
-            border: 2px solid #667eea;
-            border-radius: 5px;
+        .change-topic-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
             font-size: 1em;
-            cursor: pointer;
-            background: white;
-            min-width: 250px;
+            transition: all 0.3s ease;
         }
 
-        .file-upload {
-            display: inline-block;
-            margin-left: 15px;
-        }
-
-        .file-upload input[type="file"] {
-            padding: 5px;
-            border: 2px solid #667eea;
-            border-radius: 5px;
-            background: white;
-            cursor: pointer;
+        .change-topic-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .instructions {
@@ -76,14 +72,6 @@
             color: #666;
             margin-bottom: 30px;
             font-size: 1.1em;
-        }
-
-        .current-topic {
-            text-align: center;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 20px;
-            font-size: 1.2em;
         }
 
         .matching-area {
@@ -261,20 +249,150 @@
             transition: all 0.5s ease;
         }
 
-        .error-message {
-            color: #f44336;
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            background: #ffebee;
-            border-radius: 5px;
+        /* Modal Styles */
+        .modal-overlay {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
         }
 
-        .error-message.show {
-            display: block;
+        .modal-overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+
+        .modal-content h3 {
+            color: #667eea;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .selection-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .selection-item:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .selection-item.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .selection-item .code {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .selection-item .description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .modal-button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-button.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal-button.secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .modal-button.secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .loading-message {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        /* Popup for wrong match */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -283,7 +401,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            z-index: 2000;
             animation: fadeIn 0.3s ease;
         }
 
@@ -347,19 +465,10 @@
     <div class="container">
         <h1>Key Terms Matching Activity</h1>
         
-        <div class="topic-selector">
-            <label for="topicSelect">Choose Topic:</label>
-            <select id="topicSelect" onchange="loadTopic()">
-                <option value="default">Built-in Example</option>
-            </select>
-            <div class="file-upload">
-                <input type="file" id="csvFile" accept=".csv" onchange="handleFileUpload(event)">
-            </div>
+        <div class="topic-info">
+            <div class="current-selection" id="currentSelection">No topic selected</div>
+            <button class="change-topic-btn" onclick="showSelectionModal()">Pick New Topic</button>
         </div>
-
-        <div class="error-message" id="errorMessage"></div>
-        
-        <div class="current-topic" id="currentTopic">Current Topic: Built-in Example</div>
         
         <p class="instructions">Drag each key term to its matching definition. Be careful - one wrong match will reset all your progress!</p>
         
@@ -388,6 +497,28 @@
         </button>
     </div>
 
+    <!-- Selection Modal -->
+    <div class="modal-overlay" id="selectionModal">
+        <div class="modal-content">
+            <h2>Select Your Study Topic</h2>
+            
+            <h3>Step 1: Choose Specification</h3>
+            <div class="selection-grid" id="specificationGrid">
+                <div class="loading-message">Loading specifications...</div>
+            </div>
+            
+            <h3>Step 2: Choose Topic</h3>
+            <div class="selection-grid" id="topicGrid">
+                <div class="loading-message">Select a specification first</div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-button secondary" onclick="closeSelectionModal()">Cancel</button>
+                <button class="modal-button primary" id="startButton" onclick="startWithSelection()" disabled>Start Activity</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Popup for wrong match -->
     <div class="popup-overlay" id="popupOverlay">
         <div class="popup-message">
@@ -398,87 +529,154 @@
     </div>
 
     <script>
-        // Default built-in terms
-        const defaultTermPairs = [
-            { term: "Photosynthesis", definition: "The process by which plants use sunlight to synthesize foods from carbon dioxide and water" },
-            { term: "Mitosis", definition: "A type of cell division that results in two daughter cells each having the same number of chromosomes as the parent" },
-            { term: "Ecosystem", definition: "A biological community of interacting organisms and their physical environment" },
-            { term: "Gravity", definition: "A force that attracts a body towards the centre of the earth, or towards any other physical body having mass" },
-            { term: "Democracy", definition: "A system of government by the whole population, typically through elected representatives" },
-            { term: "Metaphor", definition: "A figure of speech that describes an object or action in a way that isn't literally true" }
-        ];
+        // GITHUB CONFIGURATION
+        const GITHUB_USERNAME = 'MrHallKSC';  // <-- Change this
+        const GITHUB_REPO = 'terms-matching-tool';  // <-- Change this
 
-        // Store all loaded topics
-        let allTopics = {
-            'default': {
-                subject: 'Built-in',
-                topic: 'Example',
-                pairs: defaultTermPairs
-            }
+        /* ============================================
+           SPECIFICATION FOLDERS CONFIGURATION
+           ============================================
+           List all your specification folder names and their CSV files here.
+           The tool will read the specification details from the first line of each CSV.
+           
+           Format:
+           'FOLDER_NAME': [
+               'csv_file1.csv',
+               'csv_file2.csv',
+               ...
+           ]
+        */
+        const specificationFolders = {
+            '1CP2': [
+                '3.1.1_Hardware.csv'
+            ],
+            '7517': [
+                'systems_architecture.csv'
+            ]
+            // Add more specification folders as needed:
+            // 'NEW_SPEC': [
+            //     'topic1.csv',
+            //     'topic2.csv'
+            // ]
         };
 
-        let currentTermPairs = defaultTermPairs;
+        // This will be populated from the CSV files
+        let specifications = {};
+
+        let currentSpecification = null;
+        let currentTopic = null;
+        let currentTermPairs = [];
         let matchedPairs = [];
         let draggedElement = null;
         let draggedType = null;
 
-        /* ============================================
-           CONFIGURE YOUR CSV FILES HERE
-           ============================================
-           Add your OneDrive/Google Drive/Dropbox CSV file links below.
-           
-           For OneDrive:
-           1. Upload your CSV file to OneDrive
-           2. Right-click the file and select "Embed"
-           3. Click "Generate HTML"
-           4. Look for the download URL in the code (ends with download.aspx)
-           5. Add that URL to the list below
-           
-           For Google Drive:
-           1. Upload your CSV to Google Drive
-           2. Right-click and select "Get link"
-           3. Change to "Anyone with the link can view"
-           4. Replace "file/d/" with "uc?export=download&id=" in the URL
-           
-           Example formats:
-           - Local file: 'biology.csv'
-           - OneDrive: 'https://onedrive.live.com/download?resid=...'
-           - Google Drive: 'https://drive.google.com/uc?export=download&id=FILE_ID'
-        */
-        
-        // GITHUB CONFIGURATION
-        // Replace these with your actual GitHub username and repository name
-        const GITHUB_USERNAME = 'MrHallKSC';  // <-- Change this
-        const GITHUB_REPO = 'terms-matching-tool';  // <-- Change this if different
-        
-        // List all your CSV files here
-        const csvFiles = [
-            'CPU_FDE_terms.csv',
-            'chemistry.csv',
-            // Add more CSV filenames here as you create them:
-            // 'physics.csv',
-            // 'history.csv',
-            // 'geography.csv',
-        ];
+        // Initialize on page load
+        window.onload = function() {
+            loadSpecifications();
+        };
 
-        // Try to load CSV files from GitHub or locally
-        function checkForCSVFiles() {
-            csvFiles.forEach((filename, index) => {
-                // First try local file (for local testing)
-                fetch(filename)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.text();
-                        }
-                        // If local fails, try GitHub
-                        const githubUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${filename}`;
-                        return fetch(githubUrl).then(r => {
-                            if (r.ok) return r.text();
-                            throw new Error('File not found');
+        function loadSpecifications() {
+            // Try to load one CSV from each folder to get specification details
+            const loadPromises = [];
+            
+            Object.entries(specificationFolders).forEach(([folderName, csvFiles]) => {
+                if (csvFiles.length > 0) {
+                    // Load the first CSV to get specification details
+                    const url = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${folderName}/${csvFiles[0]}`;
+                    
+                    const promise = fetch(url)
+                        .then(response => response.text())
+                        .then(csvText => {
+                            const lines = csvText.trim().split('\n');
+                            if (lines.length >= 1) {
+                                const specInfo = lines[0].split(',').map(s => s.trim());
+                                if (specInfo.length >= 2) {
+                                    specifications[folderName] = {
+                                        code: specInfo[0],
+                                        description: specInfo[1],
+                                        topics: csvFiles
+                                    };
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.log(`Could not load specification from ${folderName}:`, err);
+                            // Still add the folder even if we can't get details
+                            specifications[folderName] = {
+                                code: folderName,
+                                description: `Specification ${folderName}`,
+                                topics: csvFiles
+                            };
                         });
-                    })
+                    
+                    loadPromises.push(promise);
+                }
+            });
+            
+            // Once all specifications are loaded, show the modal
+            Promise.all(loadPromises).then(() => {
+                populateSpecifications();
+                showSelectionModal();
+            });
+        }
+
+        function populateSpecifications() {
+            const grid = document.getElementById('specificationGrid');
+            grid.innerHTML = '';
+            
+            Object.values(specifications).forEach(spec => {
+                const item = document.createElement('div');
+                item.className = 'selection-item';
+                item.onclick = () => selectSpecification(spec);
+                item.innerHTML = `
+                    <div class="code">${spec.code}</div>
+                    <div class="description">${spec.description}</div>
+                `;
+                grid.appendChild(item);
+            });
+        }
+
+        function selectSpecification(spec) {
+            currentSpecification = spec;
+            
+            // Update UI to show selection
+            document.querySelectorAll('#specificationGrid .selection-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.querySelector('.code').textContent === spec.code) {
+                    item.classList.add('selected');
+                }
+            });
+            
+            // Load topics for this specification
+            loadTopicsForSpecification(spec);
+        }
+
+        function loadTopicsForSpecification(spec) {
+            const grid = document.getElementById('topicGrid');
+            grid.innerHTML = '';
+            
+            spec.topics.forEach(filename => {
+                // Load each CSV to get topic details
+                const url = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${spec.code}/${filename}`;
+                
+                fetch(url)
+                    .then(response => response.text())
                     .then(csvText => {
-                        parseAndAddCSV(csvText, filename);
+                        const lines = csvText.trim().split('\n');
+                        if (lines.length >= 2) {
+                            // Parse topic info from second line
+                            const topicInfo = lines[1].split(',').map(s => s.trim());
+                            if (topicInfo.length >= 2) {
+                                const item = document.createElement('div');
+                                item.className = 'selection-item';
+                                item.onclick = () => selectTopic(filename, csvText);
+                                item.innerHTML = `
+                                    <div class="code">${topicInfo[0]}</div>
+                                    <div class="description">${topicInfo[1]}</div>
+                                `;
+                                grid.appendChild(item);
+                            }
+                        }
                     })
                     .catch(err => {
                         console.log(`Could not load ${filename}:`, err);
@@ -486,92 +684,57 @@
             });
         }
 
-        function parseAndAddCSV(csvText, filename) {
-            const lines = csvText.trim().split('\n');
-            if (lines.length < 2) return;
+        function selectTopic(filename, csvText) {
+            currentTopic = { filename, csvText };
+            
+            // Update UI
+            document.querySelectorAll('#topicGrid .selection-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Enable start button
+            document.getElementById('startButton').disabled = false;
+        }
 
-            const header = lines[0].split(',').map(item => item.trim());
-            if (header.length < 2) return;
-
-            const subject = header[0];
-            const topic = header[1];
-            const pairs = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                const parts = lines[i].split(',').map(item => item.trim());
+        function startWithSelection() {
+            if (!currentSpecification || !currentTopic) return;
+            
+            // Parse the CSV
+            const lines = currentTopic.csvText.trim().split('\n');
+            if (lines.length < 3) return;
+            
+            // Get specification and topic info
+            const specInfo = lines[0].split(',').map(s => s.trim());
+            const topicInfo = lines[1].split(',').map(s => s.trim());
+            
+            // Parse term pairs from remaining lines
+            currentTermPairs = [];
+            for (let i = 2; i < lines.length; i++) {
+                const parts = lines[i].split(',').map(s => s.trim());
                 if (parts.length >= 2 && parts[0] && parts[1]) {
-                    pairs.push({
+                    currentTermPairs.push({
                         term: parts[0],
                         definition: parts[1]
                     });
                 }
             }
-
-            if (pairs.length > 0) {
-                const key = `${subject}_${topic}`;
-                allTopics[key] = {
-                    subject: subject,
-                    topic: topic,
-                    pairs: pairs
-                };
-                updateTopicDropdown();
-            }
-        }
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    parseAndAddCSV(e.target.result, file.name);
-                    showError(''); // Clear any errors
-                } catch (err) {
-                    showError('Error parsing CSV file. Please check the format.');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            if (message) {
-                errorDiv.textContent = message;
-                errorDiv.classList.add('show');
-            } else {
-                errorDiv.classList.remove('show');
-            }
-        }
-
-        function updateTopicDropdown() {
-            const select = document.getElementById('topicSelect');
-            select.innerHTML = '';
             
-            Object.keys(allTopics).forEach(key => {
-                const topic = allTopics[key];
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = key === 'default' ? 
-                    'Built-in Example' : 
-                    `${topic.subject} - ${topic.topic}`;
-                select.appendChild(option);
-            });
+            // Update current selection display
+            document.getElementById('currentSelection').textContent = 
+                `${specInfo[1]} - ${topicInfo[1]}`;
+            
+            // Close modal and start game
+            closeSelectionModal();
+            initializeGame();
         }
 
-        function loadTopic() {
-            const select = document.getElementById('topicSelect');
-            const selectedKey = select.value;
-            const topic = allTopics[selectedKey];
-            
-            if (topic) {
-                currentTermPairs = topic.pairs;
-                document.getElementById('currentTopic').textContent = 
-                    selectedKey === 'default' ? 
-                    'Current Topic: Built-in Example' : 
-                    `Current Topic: ${topic.subject} - ${topic.topic}`;
-                initializeGame();
-            }
+        function showSelectionModal() {
+            document.getElementById('selectionModal').classList.add('show');
+        }
+
+        function closeSelectionModal() {
+            document.getElementById('selectionModal').classList.remove('show');
         }
 
         function shuffle(array) {
@@ -584,6 +747,12 @@
         }
 
         function initializeGame() {
+            if (currentTermPairs.length === 0) {
+                document.getElementById('currentSelection').textContent = 'No topic selected';
+                showSelectionModal();
+                return;
+            }
+            
             matchedPairs = [];
             document.getElementById('matched-list').innerHTML = '';
             document.getElementById('successMessage').classList.remove('show');
@@ -647,7 +816,6 @@
 
         function handleDragEnd(e) {
             e.target.classList.remove('dragging');
-            // Remove all drag-over classes
             document.querySelectorAll('.draggable').forEach(elem => {
                 elem.classList.remove('drag-over');
             });
@@ -656,7 +824,6 @@
         function handleDragEnter(e) {
             if (e.target.classList.contains('draggable') && e.target !== draggedElement) {
                 const targetType = e.target.dataset.type;
-                // Only show hover effect on opposite type
                 if (targetType !== draggedType) {
                     e.target.classList.add('drag-over');
                 }
@@ -685,7 +852,6 @@
 
             const droppedOn = e.target;
             
-            // Clear all drag-over states
             document.querySelectorAll('.draggable').forEach(elem => {
                 elem.classList.remove('drag-over');
             });
@@ -696,7 +862,6 @@
 
             const droppedType = droppedOn.dataset.type;
             
-            // Don't allow dropping on same type
             if (draggedType === droppedType) {
                 return false;
             }
@@ -731,7 +896,6 @@
                     
                     if (matchedPairs.length === currentTermPairs.length) {
                         showSuccess();
-                        // Collapse matching area when complete
                         const matchingArea = document.querySelector('.matching-area');
                         matchingArea.style.minHeight = '80px';
                     }
@@ -753,13 +917,10 @@
             const remainingItems = document.querySelectorAll('.draggable').length;
             
             if (remainingItems === 0) {
-                // If no items left, collapse to minimal height
                 matchingArea.style.minHeight = '80px';
             } else {
-                // Calculate height based on remaining items
-                // Each row of items needs about 70px
-                const rowsNeeded = Math.ceil(remainingItems / 2); // Divided by 2 for two columns
-                const newHeight = Math.max(150, (rowsNeeded * 70) + 100); // 100px for headers and padding
+                const rowsNeeded = Math.ceil(remainingItems / 2);
+                const newHeight = Math.max(150, (rowsNeeded * 70) + 100);
                 matchingArea.style.minHeight = newHeight + 'px';
             }
         }
@@ -778,7 +939,6 @@
         }
 
         function resetGame() {
-            // Show popup instead of alert
             document.getElementById('popupOverlay').classList.add('show');
         }
 
@@ -811,11 +971,6 @@
                 alert('Could not copy text. Please try again.');
             });
         }
-
-        // Initialize the game when the page loads
-        initializeGame();
-        // Check for CSV files in directory
-        checkForCSVFiles();
     </script>
 </body>
 </html>

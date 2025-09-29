@@ -1,0 +1,25 @@
+Computer Science,CPU FDE
+Key Term,Definition
+Fetch‑Decode‑Execute Cycle,"The cycle by which the CPU fetches an instruction from memory, decodes it, then executes it, repeating continuously"
+Fetch,The stage in the FDE cycle in which the CPU retrieves the next instruction from main memory
+Decode,The stage in the FDE cycle in which the CPU interprets the fetched instruction and determines required actions
+Execute,"The stage in the FDE cycle in which the CPU carries out the instruction (e.g. perform arithmetic, read/write memory)"
+CPU (Central Processing Unit),The hardware component that executes instructions and processes data
+ALU (Arithmetic Logic Unit),The part of the CPU that performs arithmetic and logical operations
+Control Unit (CU),"The part of the CPU that directs and controls the operations of the CPU, including decoding instructions and orchestrating data movement"
+Register,"Small, very fast storage locations within the CPU used to hold data and instructions during execution"
+Program Counter (PC),A register that holds the address of the next instruction to be fetched
+Memory Address Register (MAR),A register that stores the address in memory to which the CPU wants to read or write
+Memory Data Register (MDR),A register that holds the data value read from or to be written into memory
+Current Instruction Register (CIR) / Instruction Register (IR),A register that holds the instruction currently being decoded/executed
+Clock,An electronic component that produces a regular signal (pulse) to synchronise operations inside the CPU
+Clock Speed,"The frequency at which the CPU clock ticks (often measured in hertz), determining how many FDE cycles per second"
+Bus,"Electrical pathways that transfer data, addresses or control signals between CPU, memory and peripherals"
+Address Bus,The bus that carries memory addresses from the CPU to memory
+Data Bus,"The bus that carries actual data between CPU, memory and peripherals"
+Control Bus,"The bus that carries control signals (for example read/write, interrupt) between CPU and other components"
+Von Neumann Architecture,An architecture in which program instructions and data share the same memory and paths (buses)
+Cache,Very fast temporary memory located close to the CPU used to reduce time to access frequently used data
+Interrupt,"A signal to the CPU indicating that an external event needs immediate attention, pausing the normal FDE cycle"
+Embedded System,A computer system built into a larger device to control its operations
+Secondary Storage,"Non‑volatile storage (e.g. hard disk, SSD) used to store data and programs when power is off"

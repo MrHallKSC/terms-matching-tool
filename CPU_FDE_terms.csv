@@ -3,7 +3,7 @@ Fetch‑Decode‑Execute Cycle,"The cycle by which the CPU fetches an instructio
 CPU (Central Processing Unit),"The hardware component that executes instructions and processes data"
 ALU (Arithmetic Logic Unit),"The part of the CPU that performs arithmetic and logical operations"
 Control Unit (CU),"The part of the CPU that directs and controls the operations of the CPU, including decoding instructions and orchestrating data movement"
-Register,"Small, very fast storage locations within the CPU used to hold data and instructions during execution"
+Register,"Small very fast storage locations within the CPU used to hold data and instructions during execution"
 Program Counter (PC),"A register that holds the address of the next instruction to be fetched"
 Memory Address Register (MAR),"A register that stores the address in memory to which the CPU wants to read or write"
 Memory Data Register (MDR),"A register that holds the data value read from or to be written into memory"
